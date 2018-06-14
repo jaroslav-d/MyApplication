@@ -51,14 +51,13 @@ public class PostView extends MyView {
 
         mySnake.creep("left");
 
-        //myHandler.flush();
-        myHandler.post(myThread);
-        myThread.start();
 
-
-        String myTextSeven = "" + myApple.centerX();
+        String myTextSeven = "" + myMatrix.twoAxis;
         canvas.drawText(myTextSeven,25, myPaint.getTextSize()*7, myPaint);
         canvas.drawText(myTextSeven,25, myPaint.getTextSize()*8, myPaint);
         canvas.drawText(myTextSeven,25, myPaint.getTextSize()*9, myPaint);
+        //myHandler.flush();
+        myHandler.post(myThread);
+        myThread.start();
     }
 }

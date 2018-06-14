@@ -55,7 +55,7 @@ public class Snake {
                             axisY + headLen*(i-1) + headLen));
         }
         bodyLen = length;
-        matrixPosition.createField(pointOX,pointOY,length);
+        matrix.createField(pointOX,pointOY,length);
     }
 
     void creep(String route){
@@ -69,11 +69,19 @@ public class Snake {
             case "left": dx = (-1)*step; dy = 0; break;
             case "right": dx = step; dy = 0; break;
         }
-        matrix.checkCreep(dx,dy);
+
+        switch (matrix.checkCreep(dx,dy)) {
+            case "body": die(); break;
+            case "apple": eating(); break;
+            case "outside": die(); break;
+            default: break;
+        }
+        /*
         if (head.left < matrix.leftField | head.top < matrix.topField |
                 head.right > matrix.rightField | head.bottom > matrix.bottomField) {
             die();
         }
+        */
         if (!dead) {
             Rect nRect = body.get(index);
             nRect.set(head);
@@ -88,20 +96,20 @@ public class Snake {
         for (int i = 0; i < body.length; i++) {
             body[i].offset(dx,dy);
         }
-        */
+
             for (int i = 0; i < bodyLen; i++) {
                 nRect = body.get(i);
                 if (head.centerX() == nRect.centerX() & head.centerY() == nRect.centerY()) {
                     die();
                 }
             }
+            */
         }
     }
 
     void die() {
         dead = true;
     }
-/*
-    eating(){};
-    */
+
+    void eating(){}
 }

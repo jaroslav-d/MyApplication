@@ -12,17 +12,18 @@ public class MatrixPosition {
     int bottomField;
     int cellLen;
     int snakeLen;
-    int earthSymbol = 0;
-    int snakeSymbol = 1;
-    int appleSymbol = 2;
+    final int EARTH = 0;
+    final int SNAKE = 1;
+    final int APPLE = 2;
     int [] axisX;
     int [] axisY;
-    int pointOX;
-    int pointOY;
+    int pointOX = 0;
+    int pointOY = 0;
     int [][] fieldPhantom;
-    ArrayList<Integer> snakePhantomX;
-    ArrayList<Integer> snakePhantomY;
+    ArrayList<Integer> snakePhantomX = new ArrayList<>();
+    ArrayList<Integer> snakePhantomY = new ArrayList<>();
     int indexTrans = 1;
+    int twoAxis;
 
     MatrixPosition(int width, int height, int sampleRate) {
         cellLen = height/sampleRate;
@@ -45,19 +46,18 @@ public class MatrixPosition {
         }
 
         fieldPhantom = new int[axisX.length][axisY.length];
+        twoAxis = axisY[0];
     }
 
 
     void createField(int OX, int OY, int length) {
         pointOX = OX;
         pointOY = OY;
-        fieldPhantom[pointOX][pointOY] = snakeSymbol;
-        snakePhantomX = new ArrayList<>();
-        snakePhantomY = new ArrayList<>();
+        fieldPhantom[pointOX][pointOY] = SNAKE;
         snakePhantomX.add(pointOX);
         snakePhantomY.add(pointOY);
-        for (int i = 1; i < length+2; i++) {
-            fieldPhantom[pointOX][pointOY+i] = snakeSymbol;
+        for (int i = 1; i < length+1; i++) {
+            fieldPhantom[pointOX][pointOY+i] = SNAKE;
             snakePhantomX.add(pointOX);
             snakePhantomY.add(pointOY+i);
         }
@@ -71,28 +71,41 @@ public class MatrixPosition {
         do {
             randAppleX = myRand.nextInt(axisX.length);
             randAppleY = myRand.nextInt(axisY.length);
-        } while (fieldPhantom[randAppleX][randAppleY] == snakeSymbol);
-        fieldPhantom[randAppleX][randAppleY] = appleSymbol;
+        } while (fieldPhantom[randAppleX][randAppleY] == SNAKE);
+        fieldPhantom[randAppleX][randAppleY] = APPLE;
         return new Rect(axisX[randAppleX],
                 axisY[randAppleY],
                 axisX[randAppleX] + cellLen,
                 axisY[randAppleY] + cellLen);
     }
 
-    void checkCreep(int dx, int dy) {
+    String checkCreep(int dx, int dy) {
         int index = snakeLen - indexTrans;
         if (index == 1) {
             indexTrans = 1;
         } else {
             indexTrans++;
         }
-        fieldPhantom[snakePhantomX.get(index)][snakePhantomY.get(index)] = earthSymbol;
-        snakePhantomX.add(index,pointOX);
-        snakePhantomY.add(index,pointOY);
-        pointOX = pointOX + dx;
-        pointOY = pointOY + dy;
-        fieldPhantom[pointOX][pointOY] = snakeSymbol;
-
+        if (pointOX < 0 | pointOX > axisX.length |
+                pointOY < 0 | pointOY > axisY.length) {
+            return "outside";
+        }
+        fieldPhantom[snakePhantomX.get(index)][snakePhantomY.get(index)] = EARTH;
+        snakePhantomX.set(index,pointOX);
+        snakePhantomY.set(index,pointOY);
+        pointOX = pointOX + dx/cellLen;
+        pointOY = pointOY + dy/cellLen;
+        snakePhantomX.set(0,pointOX);
+        snakePhantomY.set(0,pointOY);
+        if (pointOX < 0 | pointOX > axisX.length |
+                pointOY < 0 | pointOY > axisY.length) {
+            return "outside";
+        }
+        switch (fieldPhantom[pointOX][pointOY]) {
+            case EARTH: fieldPhantom[pointOX][pointOY] = SNAKE; break;
+            case APPLE: return "apple";
+            case SNAKE: return "body";
+        }
+        return "next";
     }
-
 }
