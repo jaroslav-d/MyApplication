@@ -14,7 +14,7 @@ public class Snake {
     private int dy;
     private int superindex = 1;
     private boolean dead = false;
-    private MatrixPosition matrix;
+    MatrixPosition matrix;
 
 
     Snake(int length, MatrixPosition matrixPosition) {
@@ -72,38 +72,21 @@ public class Snake {
 
         switch (matrix.checkCreep(dx,dy)) {
             case "body": die(); break;
-            case "apple": eating(); break;
+            case "apple": eat(); break;
             case "outside": die(); break;
-            default: break;
-        }
-        /*
-        if (head.left < matrix.leftField | head.top < matrix.topField |
-                head.right > matrix.rightField | head.bottom > matrix.bottomField) {
-            die();
-        }
-        */
-        if (!dead) {
-            Rect nRect = body.get(index);
-            nRect.set(head);
-            body.set(index,nRect);
-            if (superindex != bodyLen) {
-                superindex++;
-            } else {
-                superindex = 1;
-            }
-            head.offset(dx,dy);
-        /*
-        for (int i = 0; i < body.length; i++) {
-            body[i].offset(dx,dy);
-        }
-
-            for (int i = 0; i < bodyLen; i++) {
-                nRect = body.get(i);
-                if (head.centerX() == nRect.centerX() & head.centerY() == nRect.centerY()) {
-                    die();
+            default:
+                if (!dead) {
+                    Rect nRect = body.get(index);
+                    nRect.set(head);
+                    body.set(index, nRect);
+                    if (superindex != bodyLen) {
+                        superindex++;
+                    } else {
+                        superindex = 1;
+                    }
+                    head.offset(dx, dy);
                 }
-            }
-            */
+                break;
         }
     }
 
@@ -111,5 +94,5 @@ public class Snake {
         dead = true;
     }
 
-    void eating(){}
+    void eat(){}
 }

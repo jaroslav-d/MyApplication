@@ -22,8 +22,8 @@ public class MatrixPosition {
     int [][] fieldPhantom;
     ArrayList<Integer> snakePhantomX = new ArrayList<>();
     ArrayList<Integer> snakePhantomY = new ArrayList<>();
-    int indexTrans = 1;
-    int twoAxis;
+    ClosedArray loopArray;
+    boolean firstCreate = true;
 
     MatrixPosition(int width, int height, int sampleRate) {
         cellLen = height/sampleRate;
@@ -46,11 +46,11 @@ public class MatrixPosition {
         }
 
         fieldPhantom = new int[axisX.length][axisY.length];
-        twoAxis = axisY[0];
     }
 
 
     void createField(int OX, int OY, int length) {
+        loopArray = new ClosedArray((axisX.length*axisY.length)/2);
         pointOX = OX;
         pointOY = OY;
         fieldPhantom[pointOX][pointOY] = SNAKE;
@@ -60,6 +60,7 @@ public class MatrixPosition {
             fieldPhantom[pointOX][pointOY+i] = SNAKE;
             snakePhantomX.add(pointOX);
             snakePhantomY.add(pointOY+i);
+            loopArray.add();
         }
         snakeLen = length + 1;
     }
@@ -80,32 +81,48 @@ public class MatrixPosition {
     }
 
     String checkCreep(int dx, int dy) {
-        int index = snakeLen - indexTrans;
-        if (index == 1) {
-            indexTrans = 1;
-        } else {
-            indexTrans++;
+        if (firstCreate) {
+            firstCreate = false;
+            return "next";
         }
-        if (pointOX < 0 | pointOX > axisX.length |
-                pointOY < 0 | pointOY > axisY.length) {
-            return "outside";
-        }
-        fieldPhantom[snakePhantomX.get(index)][snakePhantomY.get(index)] = EARTH;
-        snakePhantomX.set(index,pointOX);
-        snakePhantomY.set(index,pointOY);
+        int pointOXBuffer = pointOX;
+        int pointOYBuffer = pointOY;
         pointOX = pointOX + dx/cellLen;
         pointOY = pointOY + dy/cellLen;
-        snakePhantomX.set(0,pointOX);
-        snakePhantomY.set(0,pointOY);
-        if (pointOX < 0 | pointOX > axisX.length |
-                pointOY < 0 | pointOY > axisY.length) {
+        if (pointOX < 0 | pointOX > axisX.length-1 |
+                pointOY < 0 | pointOY > axisY.length-1) {
             return "outside";
         }
+        snakePhantomX.set(0,pointOX);
+        snakePhantomY.set(0,pointOY);
         switch (fieldPhantom[pointOX][pointOY]) {
-            case EARTH: fieldPhantom[pointOX][pointOY] = SNAKE; break;
-            case APPLE: return "apple";
-            case SNAKE: return "body";
+            case EARTH:
+                fieldPhantom[pointOX][pointOY] = SNAKE;
+                creepSnake(pointOXBuffer,pointOYBuffer);
+                break;
+            case APPLE:
+                fieldPhantom[pointOX][pointOY] = SNAKE;
+                eatApple(pointOXBuffer,pointOYBuffer);
+                return "apple";
+            case SNAKE:
+                return "body";
         }
         return "next";
+    }
+
+    void eatApple(int pointOXBuffer, int pointOYBuffer) {
+        int index = loopArray.returnElementArray(loopArray.lengthData);
+        fieldPhantom[snakePhantomX.get(index)][snakePhantomY.get(index)] = SNAKE;
+        snakePhantomX.add(index,pointOXBuffer);
+        snakePhantomY.add(index,pointOYBuffer);
+        loopArray.add();
+    }
+
+    void creepSnake(int pointOXBuffer, int pointOYBuffer) {
+        int index = loopArray.returnElementArray(0)+1;
+        fieldPhantom[snakePhantomX.get(index)][snakePhantomY.get(index)] = EARTH;
+        snakePhantomX.set(index,pointOXBuffer);
+        snakePhantomY.set(index,pointOYBuffer);
+        loopArray.up();
     }
 }
