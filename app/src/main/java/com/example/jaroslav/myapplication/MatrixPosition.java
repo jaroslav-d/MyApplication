@@ -59,7 +59,7 @@ public class MatrixPosition {
         for (int i = 1; i < length+1; i++) {
             fieldPhantom[pointOX][pointOY+i] = SNAKE;
             snakePhantomX.add(pointOX);
-            snakePhantomY.add(pointOY+i);
+            snakePhantomY.add(pointOY+length+1-i);
             loopArray.add();
         }
         snakeLen = length + 1;
@@ -81,10 +81,12 @@ public class MatrixPosition {
     }
 
     String checkCreep(int dx, int dy) {
+        /*
         if (firstCreate) {
             firstCreate = false;
             return "next";
         }
+        */
         int pointOXBuffer = pointOX;
         int pointOYBuffer = pointOY;
         pointOX = pointOX + dx/cellLen;
@@ -113,8 +115,8 @@ public class MatrixPosition {
     void eatApple(int pointOXBuffer, int pointOYBuffer) {
         int index = loopArray.returnElementArray(loopArray.lengthData);
         fieldPhantom[snakePhantomX.get(index)][snakePhantomY.get(index)] = SNAKE;
-        snakePhantomX.add(index,pointOXBuffer);
-        snakePhantomY.add(index,pointOYBuffer);
+        snakePhantomX.add(pointOXBuffer);
+        snakePhantomY.add(pointOYBuffer);
         loopArray.add();
     }
 

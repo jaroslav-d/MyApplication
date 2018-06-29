@@ -43,6 +43,8 @@ public class MyView extends View {
 
 
         // znacheniya
+
+        /*
         myPaint.setARGB(255,0,255,0);
         myPaint.setTextSize(27);
         String myTextOne = "" + myMatrix.leftField + "//" + myMatrix.topField +

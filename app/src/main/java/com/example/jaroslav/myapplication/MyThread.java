@@ -12,7 +12,7 @@ public class MyThread extends Thread {
     @Override
     public void run() {
         try {
-            TimeUnit.MILLISECONDS.sleep(1000);
+            TimeUnit.MILLISECONDS.sleep(200);
             myView.postInvalidate();
         } catch (InterruptedException e) {
             e.printStackTrace();

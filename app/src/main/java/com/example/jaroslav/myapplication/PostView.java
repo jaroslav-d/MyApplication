@@ -20,6 +20,7 @@ public class PostView extends MyView {
     float actionDownX;
     float actionDownY;
     String touch = "up";
+    String arrowignored = "down";
     //Handler myHandler;
 
     PostView(Context context) {
@@ -28,7 +29,7 @@ public class PostView extends MyView {
 
     public void onDraw(Canvas canvas) {
         super.onDraw(canvas);
-        if (firstCreate == true) {
+        if (firstCreate) {
             mySnake = new Snake(3, myMatrix);
             myApple = myMatrix.createApple();
             /*
@@ -45,6 +46,18 @@ public class PostView extends MyView {
             firstCreate = false;
         }
 
+        String route = touch;
+        if (route.compareTo(arrowignored) == 0) {
+            route = ignore(route);
+        }
+        mySnake.creep(route);
+        arrowignored = ignore(route);
+
+        if (mySnake.newapple) {
+            myApple = mySnake.matrix.createApple();
+            mySnake.newapple = false;
+        }
+
         myPaint.setARGB(255,0,0,255);
         canvas.drawRect(mySnake.head,myPaint);
 
@@ -56,8 +69,6 @@ public class PostView extends MyView {
         myPaint.setARGB(255,255,0,0);
         canvas.drawRect(myApple,myPaint);
 
-        String arrow = touch;
-        mySnake.creep(arrow);
 
         /*
         String myTextSeven = "" + Arrays.toString(myMatrix.loopArray.returnArray());
@@ -66,6 +77,8 @@ public class PostView extends MyView {
         canvas.drawText(myTextSeven,25, myPaint.getTextSize()*9, myPaint);
         //myHandler.flush();
         */
+
+        /*
         for (int i = 0; i < myMatrix.axisY.length; i++) {
             for (int k = 0; k < myMatrix.axisX.length; k++) {
                 String myTextSeven = "" + mySnake.matrix.fieldPhantom[k][i];
@@ -84,5 +97,15 @@ public class PostView extends MyView {
 
         myHandler.post(myThread);
         myThread.start();
+    }
+
+    String ignore (String input) {
+        switch (input) {
+            case "up": return "down";
+            case "down": return "up";
+            case "left": return "right";
+            case "right": return "left";
+        }
+        return "nothing";
     }
 }

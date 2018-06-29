@@ -15,6 +15,7 @@ public class Snake {
     private int superindex = 1;
     private boolean dead = false;
     MatrixPosition matrix;
+    boolean newapple = false;
 
 
     Snake(int length, MatrixPosition matrixPosition) {
@@ -48,11 +49,19 @@ public class Snake {
         }
         */
         body = new ArrayList<>();
+        /*
         for (int i = 2; i < length+2; i++) {
             body.add(new Rect(axisX,
                             axisY + headLen*(i-1),
                             axisX + headLen,
                             axisY + headLen*(i-1) + headLen));
+        }
+        */
+        for (int i = length+1; i > 1; i--) {
+            body.add(new Rect(axisX,
+                    axisY + headLen*(i-1),
+                    axisX + headLen,
+                    axisY + headLen*(i-1) + headLen));
         }
         bodyLen = length;
         matrix.createField(pointOX,pointOY,length);
@@ -62,7 +71,9 @@ public class Snake {
         dx = 0;
         dy = 0;
         int step = head.height();
-        int index = bodyLen - superindex;
+        int indexZero = matrix.loopArray.returnElementArray(0);
+        int indexEnd = matrix.loopArray.returnElementArray(0); //matrix.loopArray.lengthData
+        //int index = bodyLen - superindex;
         switch (route) {
             case "up": dx = 0; dy = (-1)*step; break;
             case "down": dx = 0; dy = step; break;
@@ -76,6 +87,7 @@ public class Snake {
             case "outside": die(); break;
             default:
                 if (!dead) {
+                    /*
                     Rect nRect = body.get(index);
                     nRect.set(head);
                     body.set(index, nRect);
@@ -84,6 +96,12 @@ public class Snake {
                     } else {
                         superindex = 1;
                     }
+                    head.offset(dx, dy);
+                    */
+
+                    Rect nRect = body.get(indexZero);
+                    nRect.set(head);
+                    body.set(indexZero, nRect);
                     head.offset(dx, dy);
                 }
                 break;
@@ -94,5 +112,11 @@ public class Snake {
         dead = true;
     }
 
-    void eat(){}
+    void eat(){
+        Rect nRect = new Rect(head);
+        body.add(nRect);
+        head.offset(dx,dy);
+        bodyLen++;
+        newapple = true;
+    }
 }
