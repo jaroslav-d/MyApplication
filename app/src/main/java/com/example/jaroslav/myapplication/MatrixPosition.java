@@ -3,9 +3,11 @@ package com.example.jaroslav.myapplication;
 import android.graphics.Rect;
 
 import java.util.ArrayList;
+import java.util.Observable;
+import java.util.Observer;
 import java.util.Random;
 
-public class MatrixPosition {
+public class MatrixPosition implements Observer {
     int leftField;
     int topField;
     int rightField;
@@ -23,7 +25,6 @@ public class MatrixPosition {
     ArrayList<Integer> snakePhantomX = new ArrayList<>();
     ArrayList<Integer> snakePhantomY = new ArrayList<>();
     ClosedArray loopArray;
-    boolean firstCreate = true;
 
     MatrixPosition(int width, int height, int sampleRate) {
         cellLen = height/sampleRate;
@@ -81,12 +82,6 @@ public class MatrixPosition {
     }
 
     String checkCreep(int dx, int dy) {
-        /*
-        if (firstCreate) {
-            firstCreate = false;
-            return "next";
-        }
-        */
         int pointOXBuffer = pointOX;
         int pointOYBuffer = pointOY;
         pointOX = pointOX + dx/cellLen;
@@ -126,5 +121,10 @@ public class MatrixPosition {
         snakePhantomX.set(index,pointOXBuffer);
         snakePhantomY.set(index,pointOYBuffer);
         loopArray.up();
+    }
+
+    @Override
+    public void update(Observable observable, Object o) {
+        int[] data = new int[3];
     }
 }

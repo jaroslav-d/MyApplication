@@ -3,9 +3,10 @@ package com.example.jaroslav.myapplication;
 import android.graphics.Rect;
 
 import java.util.ArrayList;
+import java.util.Observable;
 import java.util.Random;
 
-public class Snake {
+public class Snake extends Observable {
     public Rect head;
     //public Rect[] body;
     public ArrayList<Rect> body;
@@ -21,42 +22,26 @@ public class Snake {
     Snake(int length, MatrixPosition matrixPosition) {
         Random myRand = new Random();
         this.matrix = matrixPosition;
+        addObserver(matrixPosition);
         int axisX;
         int axisY;
         int pointOX;
         int pointOY;
         do{
-            pointOX = myRand.nextInt(matrixPosition.axisX.length);
-            pointOY = myRand.nextInt(matrixPosition.axisY.length);
-            axisX = matrixPosition.axisX[pointOX];
-            axisY = matrixPosition.axisY[pointOY];
-        } while (axisY+matrixPosition.cellLen*(length+1) > matrixPosition.bottomField | axisY < matrixPosition.axisY[2]);
+            pointOX = myRand.nextInt(matrix.axisX.length);
+            pointOY = myRand.nextInt(matrix.axisY.length);
+            axisX = matrix.axisX[pointOX];
+            axisY = matrix.axisY[pointOY];
+        } while (axisY+matrix.cellLen*(length+1) > matrix.bottomField | axisY < matrix.axisY[2]);
 
 
-        int headLen = matrixPosition.cellLen;
+        int headLen = matrix.cellLen;
         head = new Rect(axisX,
                         axisY,
                         axisX + headLen,
                         axisY + headLen
         );
-        /*
-        body = new Rect[length];
-        for (int i = 2; i < length+2; i++) {
-            body[i-2] = new Rect(axisX,
-                                axisY + headLen*(i-1),
-                                axisX + headLen,
-                                axisY + headLen*(i-1) + headLen);
-        }
-        */
         body = new ArrayList<>();
-        /*
-        for (int i = 2; i < length+2; i++) {
-            body.add(new Rect(axisX,
-                            axisY + headLen*(i-1),
-                            axisX + headLen,
-                            axisY + headLen*(i-1) + headLen));
-        }
-        */
         for (int i = length+1; i > 1; i--) {
             body.add(new Rect(axisX,
                     axisY + headLen*(i-1),
@@ -87,18 +72,6 @@ public class Snake {
             case "outside": die(); break;
             default:
                 if (!dead) {
-                    /*
-                    Rect nRect = body.get(index);
-                    nRect.set(head);
-                    body.set(index, nRect);
-                    if (superindex != bodyLen) {
-                        superindex++;
-                    } else {
-                        superindex = 1;
-                    }
-                    head.offset(dx, dy);
-                    */
-
                     Rect nRect = body.get(indexZero);
                     nRect.set(head);
                     body.set(indexZero, nRect);
