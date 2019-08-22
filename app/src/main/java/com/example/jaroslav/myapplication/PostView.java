@@ -16,15 +16,15 @@ import java.util.concurrent.TimeUnit;
 public class PostView extends View{
     Snake mySnake;
     Rect myApple;
+    MatrixPosition myMatrix;
     Thread myThread;
+    Handler myHandler;
     float actionDownX;
     float actionDownY;
     String touch = "up";
     String arrowignored = "down";
-    Handler myHandler;
     int width;
     int height;
-    MatrixPosition myMatrix;
     Rect myFrame;
     Paint myPaint;
 
@@ -75,25 +75,25 @@ public class PostView extends View{
         if (route.equals(arrowignored)) {
             route = ignore(route);
         }
-        mySnake.creep(route);
         arrowignored = ignore(route);
+        mySnake.bindWay(route);
+        myApple = myMatrix.isHaveApple() ? myApple : myMatrix.createApple();
 
-        if (mySnake.newapple) {
-            myApple = mySnake.matrix.createApple();
-            mySnake.newapple = false;
-        }
-
+        // paint head snake
         myPaint.setARGB(255,0,0,255);
         canvas.drawRect(mySnake.head,myPaint);
 
+        // paint body snake
         myPaint.setARGB(255,0,127,0);
         for (int i = 0; i < mySnake.bodyLen; i++) {
             canvas.drawRect(mySnake.body.get(i),myPaint);
         }
 
+        // paint apple
         myPaint.setARGB(255,255,0,0);
         canvas.drawRect(myApple,myPaint);
 
+        // run new circle
         myHandler.post(myThread);
     }
 

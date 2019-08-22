@@ -1,6 +1,7 @@
 package com.example.jaroslav.myapplication;
 
 import android.graphics.Rect;
+import android.support.annotation.NonNull;
 
 import java.util.ArrayList;
 import java.util.Observable;
@@ -19,12 +20,15 @@ public class MatrixPosition implements Observer {
     final int APPLE = 2;
     int [] axisX;
     int [] axisY;
+    int headX;
+    int headY;
     int pointOX = 0;
     int pointOY = 0;
     int [][] fieldPhantom;
     ArrayList<Integer> snakePhantomX = new ArrayList<>();
     ArrayList<Integer> snakePhantomY = new ArrayList<>();
     ClosedArray loopArray;
+    boolean haveApple = true;
 
     MatrixPosition(int width, int height, int sampleRate) {
         cellLen = height/sampleRate;
@@ -75,13 +79,14 @@ public class MatrixPosition implements Observer {
             randAppleY = myRand.nextInt(axisY.length);
         } while (fieldPhantom[randAppleX][randAppleY] == SNAKE);
         fieldPhantom[randAppleX][randAppleY] = APPLE;
+        haveApple = true;
         return new Rect(axisX[randAppleX],
                 axisY[randAppleY],
                 axisX[randAppleX] + cellLen,
                 axisY[randAppleY] + cellLen);
     }
 
-    String checkCreep(int dx, int dy) {
+    String checkCreep(int dx, int dy, Snake snake) {
         int pointOXBuffer = pointOX;
         int pointOYBuffer = pointOY;
         pointOX = pointOX + dx/cellLen;
@@ -95,13 +100,18 @@ public class MatrixPosition implements Observer {
         switch (fieldPhantom[pointOX][pointOY]) {
             case EARTH:
                 fieldPhantom[pointOX][pointOY] = SNAKE;
+                int indexZero = loopArray.returnElementArray(0);
                 creepSnake(pointOXBuffer,pointOYBuffer);
+                snake.creep(indexZero);
                 break;
             case APPLE:
                 fieldPhantom[pointOX][pointOY] = SNAKE;
                 eatApple(pointOXBuffer,pointOYBuffer);
+                snake.eat();
+                haveApple = false;
                 return "apple";
             case SNAKE:
+                snake.die();
                 return "body";
         }
         return "next";
@@ -125,6 +135,35 @@ public class MatrixPosition implements Observer {
 
     @Override
     public void update(Observable observable, Object o) {
-        int[] data = new int[3];
+        Snake snake = (Snake) observable;
+        String arg = (String) o;
+        if ("SnakeHere".equals(arg)) {
+            Random myRand = new Random();
+            int pointOX, X;
+            int pointOY, Y;
+            do{
+                pointOX = myRand.nextInt(axisX.length);
+                pointOY = myRand.nextInt(axisY.length);
+                X = axisX[pointOX];
+                Y = axisY[pointOY];
+            } while (Y+cellLen*(snake.bodyLen+1) > bottomField | Y < axisY[2]);
+            headX = X;
+            headY = Y;
+            createField(pointOX, pointOY, snake.bodyLen);
+            return;
+        }
+        checkCreep(snake.dx, snake.dy, snake);
+    }
+
+    public int getHeadX() {
+        return headX;
+    }
+
+    public int getHeadY() {
+        return headY;
+    }
+
+    public boolean isHaveApple() {
+        return haveApple;
     }
 }
