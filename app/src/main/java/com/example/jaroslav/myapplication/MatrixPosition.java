@@ -93,6 +93,7 @@ public class MatrixPosition implements Observer {
         pointOY = pointOY + dy/cellLen;
         if (pointOX < 0 | pointOX > axisX.length-1 |
                 pointOY < 0 | pointOY > axisY.length-1) {
+            snake.die();
             return "outside";
         }
         snakePhantomX.set(0,pointOX);

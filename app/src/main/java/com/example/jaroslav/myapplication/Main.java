@@ -8,8 +8,8 @@ public class Main extends Activity {
     PostView postView;
 
     @Override
-    public void onCreate(Bundle savedInstatceState) {
-        super.onCreate(savedInstatceState);
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
         postView = new PostView(this);
         setContentView(postView);
     }

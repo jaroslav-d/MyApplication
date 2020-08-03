@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <integer name="default_speed">2</integer>
+    <integer name="default_length_snake">3</integer>
+    <integer name="max_speed">5</integer>
+</resources>

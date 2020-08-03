@@ -14,6 +14,7 @@ public class Snake extends Observable {
     int dx;
     int dy;
     boolean newapple = false;
+    boolean dead = false;
 
 
     Snake(int length, MatrixPosition matrixPosition) {
@@ -61,7 +62,7 @@ public class Snake extends Observable {
     }
 
     void die() {
-        return;
+        dead = true;
     }
 
     void eat(){
@@ -70,5 +71,9 @@ public class Snake extends Observable {
         head.offset(dx,dy);
         bodyLen++;
         newapple = true;
+    }
+
+    boolean isDead() {
+        return dead;
     }
 }

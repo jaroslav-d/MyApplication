@@ -1,6 +1,9 @@
 package com.example.jaroslav.myapplication;
 
+import android.content.ContentValues;
 import android.content.Context;
+import android.content.SharedPreferences;
+import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.graphics.Rect;
@@ -10,11 +13,22 @@ import android.util.DisplayMetrics;
 import android.view.MotionEvent;
 import android.view.View;
 
+import com.example.jaroslav.myapplication.database.DbSchema;
+import com.example.jaroslav.myapplication.database.ResultsBaseHelper;
+import com.example.jaroslav.myapplication.database.ResultsWrapper;
+
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Date;
+import java.util.List;
+import java.util.TreeSet;
 import java.util.concurrent.TimeUnit;
 
 
 public class PostView extends View{
     Snake mySnake;
+    int speedSnake;
     Rect myApple;
     MatrixPosition myMatrix;
     Thread myThread;
@@ -27,6 +41,7 @@ public class PostView extends View{
     int height;
     Rect myFrame;
     Paint myPaint;
+    SQLiteDatabase myDatabase;
 
     public PostView(Context context) {
         this(context,null);
@@ -35,9 +50,15 @@ public class PostView extends View{
     public PostView(final Context context, AttributeSet attr) {
         super(context, attr);
 
-        DisplayMetrics displayMetrics = getResources().getDisplayMetrics();
+        myDatabase = new ResultsBaseHelper(context.getApplicationContext()).getWritableDatabase();
 
-        myHandler = new Handler();
+        SharedPreferences sharedPref = context.getSharedPreferences(context.getString(R.string.speed_snake), Context.MODE_PRIVATE);
+        int defaultSpeed = getResources().getInteger(R.integer.default_speed);
+        int defaultLength = getResources().getInteger(R.integer.default_length_snake);
+        final int maxSpeed = getResources().getInteger(R.integer.max_speed);
+        speedSnake = sharedPref.getInt("speed", defaultSpeed);
+
+        DisplayMetrics displayMetrics = getResources().getDisplayMetrics();
         width = displayMetrics.widthPixels;
         height = displayMetrics.heightPixels;
         myMatrix = new MatrixPosition(width,height,25);
@@ -47,13 +68,14 @@ public class PostView extends View{
                 myMatrix.bottomField
         );
         myPaint = new Paint();
-        mySnake = new Snake(3, myMatrix);
+        mySnake = new Snake(defaultLength, myMatrix);
         myApple = myMatrix.createApple();
+        myHandler = new Handler();
         myThread = new Thread(new Runnable() {
             @Override
             public void run() {
                 try {
-                    TimeUnit.MILLISECONDS.sleep(200);
+                    TimeUnit.MILLISECONDS.sleep((maxSpeed-speedSnake)*100);
                     postInvalidate();
                 } catch (InterruptedException e) {
                     e.printStackTrace();
@@ -94,7 +116,18 @@ public class PostView extends View{
         canvas.drawRect(myApple,myPaint);
 
         // run new circle
-        myHandler.post(myThread);
+        if (!mySnake.isDead()) {
+            myHandler.post(myThread);
+        } else {
+            Result result = new Result();
+            result.setPoint(mySnake.bodyLen);
+            result.setSpeed(speedSnake);
+            result.setDate(new Date().getTime());
+            TreeSet<Result> resultList = getResults();
+            resultList.add(result);
+//            deleteResult(resultList.first());
+//            addResult(result);
+        }
     }
 
     String ignore (String input) {
@@ -138,5 +171,50 @@ public class PostView extends View{
                 actionDownY = 0;
         }
         return true;
+    }
+
+    private TreeSet<Result> getResults(){
+        TreeSet<Result> results = new TreeSet<>();
+
+        ResultsWrapper cursor = new ResultsWrapper(
+                myDatabase.query(
+                        DbSchema.ResultTable.NAME,
+                        null,
+                        null,
+                        null,
+                        null,
+                        null,
+                        null)
+        );
+        try {
+            cursor.moveToFirst();
+            while (!cursor.isAfterLast()) {
+                results.add(cursor.getResult());
+                cursor.moveToNext();
+            }
+        } finally {
+            cursor.close();
+        }
+        return results;
+    }
+
+    private void addResult(Result result) {
+        ContentValues contentValues = new ContentValues();
+        contentValues.put(DbSchema.ResultTable.Cols.RID, result.getRid().toString());
+        contentValues.put(DbSchema.ResultTable.Cols.DATE, result.getDate());
+        contentValues.put(DbSchema.ResultTable.Cols.SPEED, result.getSpeed());
+        contentValues.put(DbSchema.ResultTable.Cols.POINTS, result.getPoint());
+
+        myDatabase.insert(DbSchema.ResultTable.NAME, null, contentValues);
+    }
+
+    private void deleteResult(Result result) {
+        String uuidString = result.getRid().toString();
+
+        myDatabase.delete(
+                DbSchema.ResultTable.NAME,
+                DbSchema.ResultTable.Cols.RID + " = ?",
+                new String[] {uuidString}
+                );
     }
 }
