@@ -4,7 +4,7 @@ import android.database.Cursor;
 import android.database.CursorWrapper;
 
 import com.example.jaroslav.myapplication.Result;
-import com.example.jaroslav.myapplication.database.DbSchema.ResultTable;
+import com.example.jaroslav.myapplication.database.DbSchema.ResultTable.Cols;
 
 import java.util.UUID;
 
@@ -16,10 +16,10 @@ public class ResultsWrapper extends CursorWrapper {
 
     public Result getResult(){
 
-        String rid = getString(getColumnIndex(ResultTable.Cols.RID));
-        long date = getLong(getColumnIndex(ResultTable.Cols.DATE));
-        int speed = getInt(getColumnIndex(ResultTable.Cols.SPEED));
-        int points = getInt(getColumnIndex(ResultTable.Cols.POINTS));
+        String rid = getString(getColumnIndex(Cols.RID));
+        long date = getLong(getColumnIndex(Cols.DATE));
+        int speed = getInt(getColumnIndex(Cols.SPEED));
+        int points = getInt(getColumnIndex(Cols.POINTS));
 
 
         Result result = new Result();
@@ -29,9 +29,5 @@ public class ResultsWrapper extends CursorWrapper {
         result.setPoint(points);
 
         return result;
-    }
-
-    public String getRid(){
-        return getString(getColumnIndex(ResultTable.Cols.RID));
     }
 }

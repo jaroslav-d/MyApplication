@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tool="http://schemas.android.com/tools"
+    android:orientation="horizontal"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="#000000"
+    android:gravity="center">
+
+    <TextView
+        style="@style/item_position"
+        android:id="@+id/item_stat_position"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        tool:text="1" />
+
+    <View
+        android:layout_width="5dp"
+        android:layout_height="match_parent"
+        android:background="@color/colorAccent"/>
+
+    <TextView
+        style="@style/item_speed"
+        android:id="@+id/item_stat_speed"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        tool:text="5" />
+
+    <View
+        android:layout_width="5dp"
+        android:layout_height="match_parent"
+        android:background="@color/colorAccent"/>
+
+    <TextView
+        style="@style/item_points"
+        android:id="@+id/item_stat_points"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        tool:text="999999" />
+
+    <View
+        android:layout_width="5dp"
+        android:layout_height="match_parent"
+        android:background="@color/colorAccent"/>
+
+    <TextView
+        style="@style/item_date"
+        android:id="@+id/item_stat_date"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        tool:text="01.05.2005" />
+
+</LinearLayout>

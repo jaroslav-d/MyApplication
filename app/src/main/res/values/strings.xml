@@ -11,4 +11,9 @@
     <string name="title_activity_statistics">FullscreenActivity</string>
 
     <string name="speed_snake">speed</string>
+
+    <string name="stat_position">Pos</string>
+    <string name="stat_speed">Speed</string>
+    <string name="stat_points">Points</string>
+    <string name="stat_date">Date</string>
 </resources>

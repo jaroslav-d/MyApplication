@@ -1,9 +1,7 @@
 package com.example.jaroslav.myapplication;
 
-import android.content.ContentValues;
 import android.content.Context;
 import android.content.SharedPreferences;
-import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.graphics.Rect;
@@ -13,15 +11,9 @@ import android.util.DisplayMetrics;
 import android.view.MotionEvent;
 import android.view.View;
 
-import com.example.jaroslav.myapplication.database.DbSchema;
-import com.example.jaroslav.myapplication.database.ResultsBaseHelper;
-import com.example.jaroslav.myapplication.database.ResultsWrapper;
+import com.example.jaroslav.myapplication.database.ResultsDBManager;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
 import java.util.Date;
-import java.util.List;
 import java.util.TreeSet;
 import java.util.concurrent.TimeUnit;
 
@@ -41,7 +33,7 @@ public class PostView extends View{
     int height;
     Rect myFrame;
     Paint myPaint;
-    SQLiteDatabase myDatabase;
+    ResultsDBManager myDatabase;
 
     public PostView(Context context) {
         this(context,null);
@@ -50,7 +42,7 @@ public class PostView extends View{
     public PostView(final Context context, AttributeSet attr) {
         super(context, attr);
 
-        myDatabase = new ResultsBaseHelper(context.getApplicationContext()).getWritableDatabase();
+        myDatabase = new ResultsDBManager(context);
 
         SharedPreferences sharedPref = context.getSharedPreferences(context.getString(R.string.speed_snake), Context.MODE_PRIVATE);
         int defaultSpeed = getResources().getInteger(R.integer.default_speed);
@@ -116,17 +108,27 @@ public class PostView extends View{
         canvas.drawRect(myApple,myPaint);
 
         // run new circle
-        if (!mySnake.isDead()) {
-            myHandler.post(myThread);
-        } else {
+        if (mySnake.isDead()) {
+
             Result result = new Result();
             result.setPoint(mySnake.bodyLen);
             result.setSpeed(speedSnake);
             result.setDate(new Date().getTime());
-            TreeSet<Result> resultList = getResults();
+
+            TreeSet<Result> resultList = myDatabase.getResults();
+            if (resultList.size() < 5) {
+                myDatabase.addResult(result);
+                return;
+            }
             resultList.add(result);
-//            deleteResult(resultList.first());
-//            addResult(result);
+            Result firstListResult = resultList.first();
+            if (!result.equals(firstListResult)) {
+                myDatabase.deleteResult(resultList.first());
+                myDatabase.addResult(result);
+            }
+
+        } else {
+            myHandler.post(myThread);
         }
     }
 
@@ -171,50 +173,5 @@ public class PostView extends View{
                 actionDownY = 0;
         }
         return true;
-    }
-
-    private TreeSet<Result> getResults(){
-        TreeSet<Result> results = new TreeSet<>();
-
-        ResultsWrapper cursor = new ResultsWrapper(
-                myDatabase.query(
-                        DbSchema.ResultTable.NAME,
-                        null,
-                        null,
-                        null,
-                        null,
-                        null,
-                        null)
-        );
-        try {
-            cursor.moveToFirst();
-            while (!cursor.isAfterLast()) {
-                results.add(cursor.getResult());
-                cursor.moveToNext();
-            }
-        } finally {
-            cursor.close();
-        }
-        return results;
-    }
-
-    private void addResult(Result result) {
-        ContentValues contentValues = new ContentValues();
-        contentValues.put(DbSchema.ResultTable.Cols.RID, result.getRid().toString());
-        contentValues.put(DbSchema.ResultTable.Cols.DATE, result.getDate());
-        contentValues.put(DbSchema.ResultTable.Cols.SPEED, result.getSpeed());
-        contentValues.put(DbSchema.ResultTable.Cols.POINTS, result.getPoint());
-
-        myDatabase.insert(DbSchema.ResultTable.NAME, null, contentValues);
-    }
-
-    private void deleteResult(Result result) {
-        String uuidString = result.getRid().toString();
-
-        myDatabase.delete(
-                DbSchema.ResultTable.NAME,
-                DbSchema.ResultTable.Cols.RID + " = ?",
-                new String[] {uuidString}
-                );
     }
 }

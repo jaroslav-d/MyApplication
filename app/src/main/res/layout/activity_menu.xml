@@ -1,67 +1,43 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="#000000"
+    android:orientation="vertical"
     tools:context=".Menu">
 
-    <!-- The primary full-screen view. This can be replaced with whatever view
-         is needed to present your content, e.g. VideoView, SurfaceView,
-         TextureView, etc. -->
     <TextView
         android:layout_marginTop="100dp"
+        android:layout_marginBottom="50dp"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:gravity="center_horizontal"
+        android:layout_height="wrap_content"
+        android:gravity="center"
         android:keepScreenOn="true"
         android:text="@string/app_name"
         android:textColor="#FF5722"
         android:textSize="50sp"
         android:textStyle="bold" />
 
-    <!-- This FrameLayout insets its children based on system windows using
-         android:fitsSystemWindows. -->
-    <FrameLayout
+    <Button
+        android:id="@+id/button_new_game"
+        style="?metaButtonBarButtonStyle"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:fitsSystemWindows="true">
+        android:layout_height="wrap_content"
+        android:text="@string/button_new_game" />
 
-        <LinearLayout
-            android:id="@+id/fullscreen_content_controls"
-            style="?metaButtonBarStyle"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center|center_horizontal"
-            android:background="@color/black_overlay"
-            android:orientation="vertical"
-            tools:ignore="UselessParent">
+    <Button
+        android:id="@+id/button_options"
+        style="?metaButtonBarButtonStyle"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/button_options" />
 
-            <Button
-                android:id="@+id/button_new_game"
-                style="?metaButtonBarButtonStyle"
-                android:layout_width="match_parent"
-                android:layout_height="50dp"
-                android:layout_weight="1"
-                android:text="@string/button_new_game" />
+    <Button
+        android:id="@+id/button_statistics"
+        style="?metaButtonBarButtonStyle"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/button_statistics" />
 
-            <Button
-                android:id="@+id/button_options"
-                style="?metaButtonBarButtonStyle"
-                android:layout_width="match_parent"
-                android:layout_height="50dp"
-                android:layout_weight="1"
-                android:text="@string/button_options" />
-
-            <Button
-                android:id="@+id/button_statistics"
-                style="?metaButtonBarButtonStyle"
-                android:layout_width="match_parent"
-                android:layout_height="50dp"
-                android:layout_weight="1"
-                android:text="@string/button_statistics" />
-
-        </LinearLayout>
-    </FrameLayout>
-
-</FrameLayout>
+</LinearLayout>

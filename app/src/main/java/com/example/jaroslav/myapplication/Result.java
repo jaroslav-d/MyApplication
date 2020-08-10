@@ -1,7 +1,6 @@
 package com.example.jaroslav.myapplication;
 
 import android.support.annotation.NonNull;
-
 import java.util.UUID;
 
 public class Result implements Comparable<Result> {
@@ -56,4 +55,21 @@ public class Result implements Comparable<Result> {
             return mPoint - result.getPoint();
         }
     }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Result result = (Result) o;
+        return mDate == result.mDate &&
+                mSpeed == result.mSpeed &&
+                mPoint == result.mPoint &&
+                mRid.equals(result.mRid);
+    }
+
+//    @RequiresApi(api = Build.VERSION_CODES.KITKAT)
+//    @Override
+//    public int hashCode() {
+//        return Objects.hash(mRid, mDate, mSpeed, mPoint);
+//    }
 }
